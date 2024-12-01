@@ -1,5 +1,6 @@
 import { Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
+import { db } from "~/server/db";
 
 const mockURLs = [
   "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.flV_HAhkgpxUwwDRW-5p9AHaHa%26pid%3DApi&f=1&ipt=808979bcd997a062edfb130d1239d330af9558b466085a01d324526cd22c10ae&ipo=images",
@@ -13,12 +14,18 @@ const mockImages = mockURLs.map((url, index) => ({
   url
 }));
 
-export default function HomePage() {
+export default async function HomePage() {
+
+  const posts = await db.query.posts.findMany();
+
   return (
     <main>
       <div className="flex flex-wrap gap-4">
-        {[...mockImages, ...mockImages, ...mockImages].map((image) => (
-          <div key={image.id} className="w-48">
+        {posts.map((post) => (
+          <div key={post.id} className="w-48">{post.name}</div>
+        ))}
+        {[...mockImages, ...mockImages, ...mockImages].map((image, index) => (
+          <div key={image.id + '-' + index} className="w-48">
             <a className="m-2">
               <img src={image.url} />
             </a>
